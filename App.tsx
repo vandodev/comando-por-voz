@@ -1,8 +1,10 @@
 import {useEffect, useState} from 'react'
 import { StatusBar } from 'expo-status-bar';
 import Voice , {SpeechResultsEvent} from '@react-native-voice/voice';
-import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native'
+import {View, Text, StyleSheet, TextInput, Pressable, LogBox} from 'react-native'
 import {Feather} from '@expo/vector-icons';
+
+LogBox.ignoreLogs(["new NativeEventEmitter"])
 
 export default function App() {
 
