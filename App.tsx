@@ -1,17 +1,61 @@
+import {useEffect, useState} from 'react'
 import { StatusBar } from 'expo-status-bar';
+import Voice , {SpeechResultsEvent} from '@react-native-voice/voice';
 import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native'
 import {Feather} from '@expo/vector-icons';
 
 export default function App() {
+
+  const [isListening, setisListening] = useState(false)
+  const [search, setSearch] = useState("")
+
+  function onSpeechResults({value}: SpeechResultsEvent){
+    // console.log(value)
+    const text = value ?? []
+    setSearch(text.join().replace(",", " "))
+  }
+
+  async function handleListening() {
+    try {
+      if(isListening){
+        await Voice.stop()
+        setisListening(false)
+      }else{
+        setSearch("")
+        await Voice.start("pt-BR")
+        setisListening(true)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() =>{
+    Voice.onSpeechResults = onSpeechResults
+  },[])
+
   return (
     <View style={styles.container}>
       <StatusBar style="dark" backgroundColor="transparent" translucent />
 
       <View style={styles.header}>
-        <TextInput style={styles.input} placeholder='Pesquisar ...' />
 
-        <Pressable style={styles.button}>
-          <Feather name='mic' color="#fff" size={24}/>
+        <TextInput 
+          style={styles.input} 
+          // placeholder='Pesquisar ...'
+          placeholder={isListening ? "Gravando ..." : "Pesquisar ..."}
+          editable={!isListening}
+          onChangeText={setSearch} 
+          value={search}
+        />
+
+        <Pressable style={styles.button} onPress={handleListening}>
+          <Feather
+          //  name='mic' 
+          name={isListening ? "pause" : "mic"}
+           color="#fff" 
+           size={24}
+          />
         </Pressable>
       </View>
     </View>
